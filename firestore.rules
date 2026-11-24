@@ -1,0 +1,17 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // SECURITY CRITICAL:
+    // Disallow all client read and write access to the otpVerifications collection.
+    // OTP generation, delivery, and verification must happen exclusively via
+    // the backend Cloud Functions using the Firebase Admin SDK.
+    match /otpVerifications/{document=**} {
+      allow read, write: if false;
+    }
+
+    // Default application rules for authenticated users
+    match /{document=**} {
+      allow read, write: if request.auth != null;
+    }
+  }
+}
